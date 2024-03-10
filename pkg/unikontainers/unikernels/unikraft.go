@@ -61,7 +61,8 @@ func newUnikraftCli(data UnikernelParams) (string, error) {
 	// and sharedfs or any other Unikraft related ways to pass data to guest.
 	switch data.RootFSType {
 	case "initrd":
-		cliOpts.VFS.RootFS = "vfs.rootfs=" + "initrd"
+		// cliOpts.VFS.RootFS = "vfs.rootfs=" + "initrd"
+		cliOpts.VFS.RootFS = "vfs.fstab=[ \"initrd0:/:extract:::\" ]"
 	default:
 		cliOpts.VFS.RootFS = ""
 	}
