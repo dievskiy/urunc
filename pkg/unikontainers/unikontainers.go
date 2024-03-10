@@ -246,6 +246,15 @@ func (u *Unikontainer) Exec() error {
 
 	// build the unikernel command
 	unikernelCmd, err := unikernels.UnikernelCommand(unikernels.UnikernelType(unikernelType), unikernelParams)
+    // log the unikernel command to /tmp/urunc.log
+    logFile, err := os.OpenFile("/tmp/urunc.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+    // log to new line if there is no errors
+    if err == nil {
+        logFile.WriteString(unikernelCmd + "\n")
+        defer logFile.Close()
+    }
+
+
 	if err != nil {
 		return err
 	}
