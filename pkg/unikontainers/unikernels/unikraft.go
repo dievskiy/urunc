@@ -54,6 +54,9 @@ func newUnikraftCli(data UnikernelParams) (string, error) {
 	cliOpts.Net.Gateway = "netdev.ipv4_gw_addr=" + data.EthDeviceGateway
 	cliOpts.Net.Mask = "netdev.ipv4_subnet_mask=" + data.EthDeviceMask
 
+	var netdev string
+	netdev = "netdev.ip=" + data.EthDeviceIP + "/24" + ":" + data.EthDeviceGateway
+
 	// TODO: We need to add support for actual block devices (e.g. virtio-blk)
 	// and sharedfs or any other Unikraft related ways to pass data to guest.
 	switch data.RootFSType {
@@ -63,10 +66,8 @@ func newUnikraftCli(data UnikernelParams) (string, error) {
 		cliOpts.VFS.RootFS = ""
 	}
 
-	return fmt.Sprintf("%s %s %s %s %s -- %s", appName,
-		cliOpts.Net.Address,
-		cliOpts.Net.Gateway,
-		cliOpts.Net.Mask,
+	return fmt.Sprintf("%s %s %s -- %s", appName,
+		netdev,
 		cliOpts.VFS.RootFS,
 		cliOpts.Command), nil
 }
