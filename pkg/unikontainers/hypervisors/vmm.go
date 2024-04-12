@@ -34,6 +34,7 @@ type ExecArgs struct {
 	IPAddress     string   // The IP address of the TAP device
 	GuestMAC      string   // The MAC address of the guest network device
 	Environment   []string // Environment
+	MemoryMiB     uint     // The amount of memory in MiB
 }
 
 type VmmType string

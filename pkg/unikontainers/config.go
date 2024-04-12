@@ -36,6 +36,7 @@ type UnikernelConfig struct {
 	UnikernelBinary string `json:"com.urunc.unikernel.binary"`
 	Hypervisor      string `json:"com.urunc.unikernel.hypervisor"`
 	Initrd          string `json:"com.urunc.unikernel.initrd,omitempty"`
+	Memory          string `json:"com.urunc.unikernel.memory,omitempty"`
 }
 
 // GetUnikernelConfig tries to get the Unikernel config from the bundle annotations.
@@ -65,6 +66,7 @@ func getConfigFromSpec(spec *specs.Spec) (*UnikernelConfig, error) {
 	unikernelBinary := spec.Annotations["com.urunc.unikernel.binary"]
 	hypervisor := spec.Annotations["com.urunc.unikernel.hypervisor"]
 	initrd := spec.Annotations["com.urunc.unikernel.initrd"]
+	memory := spec.Annotations["com.urunc.unikernel.memory"]
 
 	Log.WithFields(logrus.Fields{
 		"unikernelType":   unikernelType,
@@ -72,6 +74,7 @@ func getConfigFromSpec(spec *specs.Spec) (*UnikernelConfig, error) {
 		"unikernelBinary": unikernelBinary,
 		"hypervisor":      hypervisor,
 		"initrd":          initrd,
+		"memory":          memory,
 	}).Info("urunc annotations")
 
 	conf := fmt.Sprintf("%s%s%s%s%s", unikernelType, unikernelCmd, unikernelBinary, hypervisor, initrd)
@@ -84,6 +87,7 @@ func getConfigFromSpec(spec *specs.Spec) (*UnikernelConfig, error) {
 		UnikernelCmd:    unikernelCmd,
 		Hypervisor:      hypervisor,
 		Initrd:          initrd,
+		Memory:          memory,
 	}, nil
 }
 
@@ -120,6 +124,7 @@ func getConfigFromJSON(bundleDir string) (*UnikernelConfig, error) {
 		"unikernelBinary": conf.UnikernelBinary,
 		"hypervisor":      conf.Hypervisor,
 		"initrd":          conf.Initrd,
+		"memory":          conf.Memory,
 	}).Info("urunc.json annotations")
 	return &conf, nil
 }
@@ -155,6 +160,12 @@ func (c *UnikernelConfig) decode() {
 		Log.WithError(err).Fatal("failed to decode Initrd")
 	}
 	c.Initrd = string(decoded)
+
+	decoded, err = base64.StdEncoding.DecodeString(c.Memory)
+	if err != nil {
+		Log.WithError(err).Fatal("failed to decode Memory")
+	}
+	c.Memory = string(decoded)
 }
 
 // Map returns a map containing the Unikernel config data
@@ -174,6 +185,9 @@ func (c *UnikernelConfig) Map() map[string]string {
 	}
 	if c.Initrd != "" {
 		myMap["com.urunc.unikernel.initrd"] = c.Initrd
+	}
+	if c.Memory != "" {
+		myMap["com.urunc.unikernel.memory"] = c.Memory
 	}
 	return myMap
 }

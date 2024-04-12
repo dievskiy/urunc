@@ -21,6 +21,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"sync"
 	"syscall"
 
@@ -148,12 +149,21 @@ func (u *Unikontainer) Exec() error {
 		initrdAbsPath = filepath.Join(rootfsDir, u.State.Annotations["com.urunc.unikernel.initrd"])
 	}
 
+	memoryMiB := 256
+	if u.State.Annotations["com.urunc.unikernel.memory"] != "" {
+	    memoryMiB, err = strconv.Atoi(u.State.Annotations["com.urunc.unikernel.memory"])
+	    if err != nil {
+	        return err
+	    }
+	}
+
 	// populate vmm args
 	vmmArgs := hypervisors.ExecArgs{
 		Container:     u.State.ID,
 		UnikernelPath: unikernelAbsPath,
 		InitrdPath:    initrdAbsPath,
 		Environment:   os.Environ(),
+		MemoryMiB:     uint(memoryMiB),
 	}
 
 	// populate unikernel params

@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 )
@@ -86,7 +87,7 @@ func (fc *Firecracker) Execve(args ExecArgs) error {
 	// VM config for Firecracker
 	FCMachine := FirecrackerMachine{
 		VcpuCount:       1,   // TODO: Use value from configuration or Environment variable
-		MemSizeMiB:      256, // TODO: Use value from configuration or Environment variable
+		MemSizeMiB:      args.MemoryMiB,
 		Smt:             false,
 		TrackDirtyPages: false,
 	}
